@@ -139,7 +139,7 @@ class Dash extends Component{
                                             );
                                         else
                                             return (
-                                                <Route path={prop.path} component={prop.component} key={key}/>
+                                                <Route {...this.props} path={prop.path} component={prop.component} key={key}/>
                                             );
                                     }
                                 })

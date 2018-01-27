@@ -12,6 +12,7 @@ import ValidationForms from 'views/Forms/ValidationForms.jsx';
 import Wizard from 'views/Forms/Wizard/Wizard.jsx';
 import RegularTables from 'views/Tables/RegularTables.jsx';
 import ExtendedTables from 'views/Tables/ExtendedTables.jsx';
+import Attendance from 'views/Attendance.jsx';
 import DataTables from 'views/Tables/DataTables.jsx';
 import GoogleMaps from 'views/Maps/GoogleMaps.jsx';
 import FullScreenMap from 'views/Maps/FullScreenMap.jsx';
@@ -23,10 +24,11 @@ import UserPage from 'views/Pages/UserPage.jsx';
 import pagesRoutes from './pages.jsx';
 
 var pages = [{ path: "/pages/user-page", name: "User Page", mini: "UP", component: UserPage }].concat(pagesRoutes);
-
+    
 var dashRoutes = [
     { path: "/dashboard", name: "Dashboard", icon: "pe-7s-graph", component: Dashboard },
-    { collapse: true, path: "/components", name: "Components", state: "openComponents", icon: "pe-7s-plugin", views:[
+	{ path: "/attendance", name: "Attendance", icon: "pe-7s-note2", component: Attendance },
+	{ collapse: true, path: "/components", name: "Components", state: "openComponents", icon: "pe-7s-plugin", views:[
         { path: "/components/buttons", name: "Buttons", mini: "B", component: Buttons },
         { path: "/components/grid-system", name: "Grid System", mini: "GS", component: GridSystem },
         { path: "/components/panels", name: "Panels", mini: "P", component: Panels },

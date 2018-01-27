@@ -5,7 +5,7 @@ import styled from 'styled-components';
 
 import HeaderLinks from './HeaderLinks.jsx';
 
-import appRoutes from '../../routes/routes.jsx';
+import dashRoutes from '../../routes/dash.jsx';
 
 const StyledNavbar = styled(Navbar)`
     background: ghostwhite !important;
@@ -38,7 +38,7 @@ class Header extends Component{
     }
     getBrand(){
         var name;
-        appRoutes.map((prop,key) => {
+        dashRoutes.map((prop,key) => {
             if(prop.collapse){
                  prop.views.map((prop,key) => {
                     if(prop.path === this.props.history.location.pathname){

@@ -1,10 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {
-    Route,
-    Switch,
-    Router    
-} from 'react-router-dom';
+import { Router } from 'react-router-dom';
 
 import Auth from "./Auth/Auth";
 import history from "./history";

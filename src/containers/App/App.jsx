@@ -10,11 +10,9 @@ import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import Sidebar from '../../components/Sidebar/Sidebar';
 
-import {style} from "../../variables/Variables.jsx";
+import dashRoutes from 'routes/dash.jsx';
 
-// dinamically create app routes
-import appRoutes from 'routes/routes.jsx';
-
+import { style } from "variables/Variables.jsx";
 
 class App extends Component {
 	constructor(props){
@@ -114,12 +112,14 @@ class App extends Component {
 					<Header {...this.props}/>
 					{ 
 						isAuthenticated() ?
-							<Switch>
+							<Switch {...this.props}>
 									{
-											appRoutes.map((prop,key) => {
-													if(prop.name === "Notifications")
+											dashRoutes.map((prop,key) => {
+												if(prop.collapse){
+													return prop.views.map((prop,key) => {
+															if(prop.name === "Notifications"){
 															return (
-																	<Route
+																	<Route 
 																			path={prop.path}
 																			key={key}
 																			render={routeProps =>
@@ -129,6 +129,17 @@ class App extends Component {
 																				 />}
 																	/>
 															);
+														} else {
+															return (
+																	<Route {...this.props} 
+																			path={prop.path} 
+																			component={prop.component} 
+																			key={key} 
+																	/>
+															);
+													}
+											})
+									} else {
 													if(prop.redirect)
 															return (
 																	<Redirect from={prop.path} to={prop.to} key={key}/>
@@ -136,6 +147,7 @@ class App extends Component {
 													return (
 															<Route path={prop.path} component={prop.component} key={key}/>
 													);
+												}
 											})
 									}
 								</Switch>

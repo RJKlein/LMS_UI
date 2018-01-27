@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {
-    FormGroup, ControlLabel, FormControl,
-    Grid, Row, Col
+    Grid, Row, Col,
+    FormGroup, ControlLabel, FormControl
 } from 'react-bootstrap';
 
 import Card from 'components/Card/Card.jsx';
@@ -9,64 +9,124 @@ import FormInputs from 'components/FormInputs/FormInputs.jsx';
 import UserCard from 'components/Card/UserCard.jsx';
 import Button from 'elements/CustomButton/CustomButton.jsx';
 
+import Datetime from 'react-datetime';
+// react component that creates a dropdown menu for selection
+import Select from 'react-select';
+
 import avatar from "assets/img/default-avatar.png";
 
+import {postRequestOptions, checkStatus} from '../../helpers/fetch';
+import { apiUrl } from "../../helpers/api"
+
+var selectOptions = [
+    { value: 'teacher', label: 'teacher' },
+    { value: 'student', label: 'student' },
+    { value: 'mentor', label: 'mentor' },
+    { value: 'admin', label: 'admin' } ]  
+
+    var selectGenderOptions = [
+        { value: 'male', label: 'male' },
+        { value: 'female', label: 'female' } ]  
+
 class UserPage extends Component {
+
+    constructor(props) {
+        super(props)
+        this.state = {
+            userType: selectOptions[1],
+            gender: selectGenderOptions[0],
+            // Register
+            email: "",
+            password: "",
+            cfpassword: "",
+            emailError: null,
+            passwordError: null,
+            cfpasswordError: null,            
+            person: [] 
+        };
+        
+        this.handleSubmit = this.handleSubmit.bind(this);  
+    }
+    
+    componentDidMount() {
+        fetch(apiUrl+'persons/3')
+            .then(response => response.json())
+            .then(person => 
+              {
+                this.setState({
+                  person
+                })
+              console.log("person: ", this.state.person)
+            })
+      }
+
+    handleEmailChange(event){
+        this.setState({
+            email: event.target.value
+        });
+        var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        re.test(event.target.value) === false ? this.setState({ emailError: (<small className="text-danger">Email is required and format should be <i>john@doe.com</i>.</small>) }):this.setState({ emailError: null });
+    }
+
+    handleSubmit(event) {
+
+        event.preventDefault();
+        
+        var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        re.test(this.state.email) === false ? this.setState({ emailError: (<small className="text-danger">Email is required and format should be <i>john@doe.com</i>.</small>) }):this.setState({ emailError: null });
+
+        const { getAccessToken } = this.props.auth;
+        const headers = { 'Authorization': `Bearer ${getAccessToken()}`}
+                
+        const formData = new FormData(event.target)
+        const request = postRequestOptions(formData)
+    
+        this.state.emailError === null ?
+        fetch(apiUrl+'persons', request)        
+        .then(checkStatus)
+        .then(response => response.json())
+        .then(function (data) {
+            console.log('Request succeeded with JSON response', data);
+        })
+        .catch(function (error) {
+            console.log('Request failed', error);
+        }) : null;
+    }
+
     render() {
         return (
-            <div className="main-content">
+            <div className="content">
                 <Grid fluid>
                     <Row>
                         <Col md={8}>
                             <Card
                                 title="Edit Profile"
                                 content={
-                                    <form>
-                                        <FormInputs
-                                            ncols = {["col-md-5" , "col-md-3" , "col-md-4"]}
-                                            proprieties = {[
-                                                {
-                                                 label : "Company (disabled)",
-                                                 type : "text",
-                                                 bsClass : "form-control",
-                                                 placeholder : "Company",
-                                                 defaultValue : "Creative Code Inc.",
-                                                 disabled : true
-                                                },
-                                                {
-                                                 label : "Username",
-                                                 type : "text",
-                                                 bsClass : "form-control",
-                                                 placeholder : "Username",
-                                                 defaultValue : "tania123"
-                                                },
-                                                {
-                                                 label : "Email address",
-                                                 type : "email",
-                                                 bsClass : "form-control",
-                                                 placeholder : "Email"
-                                                }
-                                            ]}
-                                        />
+                                    <form onSubmit={this.handleSubmit}>
                                         <FormInputs
                                             ncols = {["col-md-6" , "col-md-6"]}
                                             proprieties = {[
                                                 {
+                                                 name: "firstName",
                                                  label : "First name",
                                                  type : "text",
                                                  bsClass : "form-control",
-                                                 placeholder : "First name",
-                                                 defaultValue : "Tania"
+                                                 placeholder : "First name"
                                                 },
                                                 {
+                                                 name: "lastName",
                                                  label : "Last name",
                                                  type : "text",
                                                  bsClass : "form-control",
-                                                 placeholder : "Last name",
-                                                 defaultValue : "Andrew"
+                                                 placeholder : "Last name"
                                                 }
                                             ]}
                                         />
+                                        <FormGroup>
+                                            <ControlLabel>Email adress: <span className="star">*</span></ControlLabel>
+                                            <FormControl type="text" name="email" onChange={ (event) => this.handleEmailChange(event) }/>
+                                            {this.state.emailError}
+                                        </FormGroup>
                                         <FormInputs
                                             ncols = {["col-md-12"]}
                                             proprieties = {[
@@ -75,26 +135,19 @@ class UserPage extends Component {
                                                     type : "text",
                                                     bsClass : "form-control",
                                                     placeholder : "Home Adress",
-                                                    defaultValue : "Bld Mihail Kogalniceanu, nr. 8 Bl 1, Sc 1, Ap 09"
+                                                    defaultValue : "1601 N Peoria St, Unit 109"
                                                 }
                                             ]}
                                         />
                                         <FormInputs
-                                            ncols = {["col-md-4","col-md-4","col-md-4"]}
+                                            ncols = {["col-md-4","col-md-4"]}
                                             proprieties = {[
                                                 {
                                                     label : "City",
                                                     type : "text",
                                                     bsClass : "form-control",
                                                     placeholder : "City",
-                                                    defaultValue : "City"
-                                                },
-                                                {
-                                                    label : "Country",
-                                                    type : "text",
-                                                    bsClass : "form-control",
-                                                    placeholder : "Country",
-                                                    defaultValue : "Country"
+                                                    defaultValue : "Chicago"
                                                 },
                                                 {
                                                     label : "Postal Code",
@@ -104,15 +157,43 @@ class UserPage extends Component {
                                                 }
                                             ]}
                                         />
-
-                                        <div className="row">
-                                            <div className="col-md-12">
+                                        <Col md={4}>
+                                            <h6 className="title">Date of Birth</h6>
+                                            <FormGroup>
+                                                <Datetime
+                                                    name = "dateOfBirth"
+                                                    timeFormat={false}
+                                                    inputProps={{placeholder:"Date Picker Here"}}
+                                                    defaultValue={new Date()}
+                                                />
+                                            </FormGroup>
+                                        </Col>
+                                        <Col md={4}>
+                                            <h6 className="title">User Type</h6>
+                                            <Select
+                                                    name="userType"
+                                                    value={this.state.userType}
+                                                    options={selectOptions}
+                                                    onChange={(value) => this.setState({ userType: value})}
+                                                />
+                                        </Col>
+                                        <Col md={4}>
+                                            <h6 className="title">User Type</h6>
+                                            <Select
+                                                    name="gender"
+                                                    value={this.state.gender}
+                                                    options={selectGenderOptions}
+                                                    onChange={(value) => this.setState({ gender: value})}
+                                                />
+                                        </Col>
+                                        <Row>
+                                            <Col md={12}>
                                                 <FormGroup controlId="formControlsTextarea">
-                                                    <ControlLabel>About Me</ControlLabel>
-                                                    <FormControl rows="5" componentClass="textarea" bsClass="form-control" placeholder="Here can be your description" defaultValue="Lamborghini Mercy, Your chick she so thirsty, I'm in that two seat Lambo."/>
+                                                    <ControlLabel>My Goals</ControlLabel>
+                                                    <FormControl rows="5" componentClass="textarea" bsClass="form-control" placeholder="Here can be your description" defaultValue="I want to grow up to be a Software Developer!"/>
                                                 </FormGroup>
-                                            </div>
-                                        </div>
+                                            </Col>
+                                        </Row>
                                         <Button
                                             bsStyle="info"
                                             pullRight
@@ -130,8 +211,8 @@ class UserPage extends Component {
                             <UserCard
                                 bgImage="https://ununsplash.imgix.net/photo-1431578500526-4d9613015464?fit=crop&fm=jpg&h=300&q=75&w=400"
                                 avatar={avatar}
-                                name="Tania Andrew"
-                                userName="tania123"
+                                name="Mike Andrew"
+                                userName="michael24"
                                 description={
                                     <span>
                                         "Lamborghini Mercy
@@ -149,10 +230,10 @@ class UserPage extends Component {
                                     </div>
                                 }
                             />
-
                         </Col>
+
                     </Row>
-                </Grid>
+                </Grid>>
             </div>
         );
     }

@@ -55,6 +55,7 @@ class Sidebar extends Component{
                 	</a>
                 </div>
                 <div className="sidebar-wrapper" ref="sidebarWrapper">
+                {this.props.auth.isAuthenticated() ?
                     <div className="user">
                         <div className="photo">
                             <img src={avatar} alt="Avatar"/>
@@ -89,19 +90,21 @@ class Sidebar extends Component{
                                 </ul>
                             </Collapse>
                         </div>
-                    </div>
+                    </div> : null}
 
                     <ul className="nav">
                         {/* If we are on responsive, we want both links from navbar and sidebar
                             to appear in sidebar, so we render here HeaderLinks */}
-                        { this.state.width <= 992 ? (<HeaderLinks />):null }
+                        { this.state.width <= 992 ? (<HeaderLinks auth={this.props.auth}/>):null }
                         {/*
                             here we render the links in the sidebar
                             if the link is simple, we make a simple link, if not,
                             we have to create a collapsible group,
                             with the speciffic parent button and with it's children which are the links
                         */}
-                        {
+                {this.props.auth.isAuthenticated() ?
+                        
+                        
                             dashRoutes.map((prop,key) => {
                                 var st = {};
                                 st[prop["state"]] = !this.state[prop.state];
@@ -120,7 +123,7 @@ class Sidebar extends Component{
                                                         prop.views.map((prop,key) => {
                                                             return (
                                                                 <li className={this.activeRoute(prop.path)} key={key}>
-                                                                    <NavLink to={prop.path} className="nav-link" activeClassName="active">
+                                                                    <NavLink {...this.props} to={prop.path} className="nav-link" activeClassName="active">
                                                                         <span className="sidebar-mini">{prop.mini}</span>
                                                                         <span className="sidebar-normal">{prop.name}</span>
                                                                     </NavLink>
@@ -148,10 +151,10 @@ class Sidebar extends Component{
                                     }
                                 }
                             })
-                        }
+                        :null}
                     </ul>
                 </div>
-            </div>
+            </div> 
         );
     }
 }

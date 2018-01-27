@@ -1,10 +1,12 @@
 import React, { Component } from "react";
-import ChartistGraph from "react-chartist";
+//import ChartistGraph from "react-chartist";
 import { Grid, Row, Col, Table } from "react-bootstrap";
 
-import { Card } from "../../components/Card/Card.jsx";
-import { StatsCard } from "../../components/StatsCard/StatsCard.jsx";
-import { Tasks } from "../../components/Tasks/Tasks.jsx";
+import Card from 'components/Card/Card.jsx';
+
+/*
+import StatsCard from 'components/Card/StatsCard.jsx';
+import Tasks from 'components/Tasks/Tasks.jsx';
 import {
   dataPie,
   legendPie,
@@ -17,6 +19,7 @@ import {
   responsiveBar,
   legendBar
 } from "../../variables/Variables.jsx";
+*/
 
 import { apiUrl } from "../../helpers/api"
 
